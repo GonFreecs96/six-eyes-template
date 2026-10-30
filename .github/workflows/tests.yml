@@ -1,6 +1,7 @@
 name: tests
 
-# Hermetic unit tests (no GCP, no MCP, no governed-repo clone required).
+# Hermetic unit tests (no GCP, no MCP, no governed-repo clone required) plus
+# the scrub gate, which fails the build on any deny token in a tracked file.
 
 on:
   pull_request:
@@ -28,6 +29,9 @@ jobs:
 
       - name: Install test dependencies
         run: pip install -r requirements.txt
+
+      - name: Scrub gate (deny-token scan of every tracked file)
+        run: python scripts/scrub_check.py
 
       - name: Run pytest
         run: python -m pytest -q

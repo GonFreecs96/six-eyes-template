@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Six Eyes context-layer drift gate (git pre-commit hook).
+# Six Eyes pre-commit hook: scrub gate + context-layer drift gate.
 #
 # This is the TRACKED copy of the hook. It is NOT active until installed into
 # .git/hooks/ — run `scripts/install-hooks.sh` once (git does not version-control
@@ -11,6 +11,12 @@
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Scrub gate: every commit, cheap (stdlib, ~100 files). Fails on any deny token.
+python3 -I "$REPO_ROOT/scripts/scrub_check.py" --quiet || {
+  echo "[pre-commit] scrub gate failed — run scripts/scrub_check.py for the hit list."
+  exit 1
+}
 
 # Only gate when something that feeds the context layer is staged.
 if git diff --cached --name-only | grep -Eq \

@@ -42,6 +42,7 @@ Local UI: `backlog-board`. Voice: `voice-rewrite`, `storyteller` (read `SOUL.md`
 2. **Orchestrated `/six-eyes-run`** writes to `data/staging/` until promote; one human gate via `scripts/six-eyes-promote.py`.
 3. **Context layer:** edit tagged rules in `data/bq-knowledge.md`, run `scripts/export_context.py`; Confluence registry is `config/confluence-registry.yaml` (placeholder).
 4. No insurance-domain examples in this template — Acme subscription semantics only.
+5. **Scrub gate:** `python3 scripts/scrub_check.py` must be clean before every commit (the pre-commit hook and CI run it). Scrubbing something out? Add its token there.
 
 ## Commands
 
