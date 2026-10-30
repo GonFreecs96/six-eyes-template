@@ -25,6 +25,8 @@ files are skipped with a WARN on stderr. A missing --overlay directory is a WARN
 is treated as empty.
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import re

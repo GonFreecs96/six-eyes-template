@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Tests for inject-bq-context.py using the repo config corpus."""
+
+from __future__ import annotations
+
 import json
 import subprocess
 from pathlib import Path
