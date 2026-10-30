@@ -6,9 +6,8 @@
 
 # Preflight: headless `claude -p` OAuth expires SEPARATELY from the interactive
 # session, and an expired session fails every step instantly (~1s each) with the
-# staging area already wiped — burning the whole run. Hit twice: 2026-08-03 and
-# 2026-09-01, both requiring a manual `claude auth login` + full re-run (retro
-# 2026-W36). Fail fast instead, before anything is cleared.
+# staging area already wiped — burning the whole run and forcing a manual
+# `claude auth login` + full re-run. Fail fast instead, before anything is cleared.
 #
 # Binary lookup: `claude` is often not on PATH (desktop-app installs bundle it under
 # ~/Library/Application Support/Claude/claude-code/). Use CLAUDE_BIN if set, else PATH,

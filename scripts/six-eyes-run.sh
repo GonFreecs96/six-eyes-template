@@ -144,25 +144,21 @@ else
 fi
 
 # Step 3: Opportunity Scan
-# max-turns bumped 15->25 2026-07-06: a live run with Skill correctly allowlisted
-# still hit error_max_turns at 16 turns/$0.96 (well under the $1.00 budget) with
-# seemingly complete staged output — 15 was just too tight. Budget bumped too
-# (1.00->1.50) so more turns doesn't just trade a turn-cap miss for a budget-cap one.
-# Budget 2.75 — opportunity-scan can exhaust lower caps before finishing registry output.
+# Turn and budget caps move together: raising only turns trades a turn-cap miss
+# for a budget-cap miss. 25 turns / $2.75 is the lowest pair that reliably lets
+# the registry output finish; the step looks complete but exits non-zero when
+# it trips either cap.
 run_step "Step 3: Opportunity Scan" \
   "Run the opportunity-scan skill in STAGING MODE. Stage the cross-module registry and any cross_modules frontmatter proposals; append to the run manifest." \
   "$LOCAL_TOOLS" \
   25 2.75 /tmp/sixeyes-oppo.json
 
-# Step 4: Staleness Check — same rationale as Step 3 (hit error_max_turns at 16
-# turns/$1.49, essentially at the $1.50 cap already). Budget bumped again 2.00->2.75
-# Budget 2.75 — staleness-check is token-heavy; lower caps often trip error_max_budget_usd
-# even when staged output is complete.
-# Model downshifted to Haiku 2026-07-27 (token-usage overhaul): this step is the
-# most mechanical of the chain — sync-metadata.py does the scoring math; the skill
-# mostly stages the dashboard + escalation frontmatter from computed fields. If a
-# run produces off-target escalation rationale, revert the 7th arg to
-# claude-sonnet-5.
+# Step 4: Staleness Check — same cap rationale as Step 3; this step is token-heavy
+# and lower budgets trip error_max_budget_usd even when the staged output is complete.
+# Runs on Haiku: it is the most mechanical step of the chain — sync-metadata.py does
+# the scoring math; the skill mostly stages the dashboard + escalation frontmatter
+# from computed fields. If a run produces off-target escalation rationale, drop the
+# 7th arg to fall back to the default model.
 run_step "Step 4: Staleness Check" \
   "Run the staleness-check skill in STAGING MODE. Stage the priority dashboard and escalation frontmatter proposals; append to the run manifest." \
   "$LOCAL_TOOLS" \

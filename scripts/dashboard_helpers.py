@@ -14,21 +14,47 @@ REPO_ROOT = Path(__file__).parent.parent
 MODULES_CONFIG_PATH = REPO_ROOT / "config" / "modules.json"
 
 
-def load_module_labels():
-    """category id -> display name, read from config/modules.json. Carries a frozen
-    legacy 'app-checkout' label so pre-split items still render during migration."""
-    labels = {"app-checkout": "App & Checkout"}
+def _load_modules_config():
     try:
-        cfg = json.loads(MODULES_CONFIG_PATH.read_text())
-        for cat in cfg.get("categories", []):
-            if cat.get("id") and cat.get("name"):
-                labels[cat["id"]] = cat["name"]
+        return json.loads(MODULES_CONFIG_PATH.read_text())
     except (json.JSONDecodeError, OSError):
-        pass
+        return {}
+
+
+def load_module_labels():
+    """category id -> display name, read from config/modules.json."""
+    labels = {}
+    for cat in _load_modules_config().get("categories", []):
+        if cat.get("id") and cat.get("name"):
+            labels[cat["id"]] = cat["name"]
     return labels
 
 
+def load_item_id_prefixes():
+    """Backlog item-ID prefixes (`id_prefix` per category in config/modules.json),
+    e.g. ["ONB", "CHK", ...]. Backlog IDs are `<prefix>-<n>`; Jira keys (ACMEONB-201)
+    are a different namespace and must not be mistaken for them."""
+    prefixes = []
+    for cat in _load_modules_config().get("categories", []):
+        p = cat.get("id_prefix")
+        if p and p not in prefixes:
+            prefixes.append(p)
+    return prefixes
+
+
+def item_id_regex(prefixes=None):
+    """Regex matching backlog item IDs for the given prefixes (default: config).
+    The left-boundary guard keeps a Jira key like ACMEONB-1103 from minting a
+    phantom ONB-1103 match. Matches nothing if no prefixes are configured."""
+    prefixes = list(prefixes) if prefixes is not None else load_item_id_prefixes()
+    if not prefixes:
+        return re.compile(r"(?!x)x")
+    alts = "|".join(re.escape(p) for p in sorted(prefixes, key=len, reverse=True))
+    return re.compile(r"(?<![A-Za-z0-9])(?:%s)-\d+" % alts)
+
+
 MODULE_LABEL = load_module_labels()
+ITEM_ID_RE = item_id_regex()
 
 NULL_TOKENS = {"", "none", "null", "~"}
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")

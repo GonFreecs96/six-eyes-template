@@ -74,16 +74,20 @@ surface as escalation candidates even if their `escalation_level` field wasn't r
 close time; if you find one, that's a frontmatter cleanup opportunity (reset
 `escalation_level` to 0), not an escalation to act on:
 
-**Level 1 (flagged — 2+ weeks stale):**
-- State: "[Item] has been at [status] for [N] weeks without progress."
-- Suggest: Check if the blocker is still valid. If yes, name the specific person to ping (look up `config/modules.json` → `categories` by module → `pm`, and `docs/contacts.md` for engineers).
+Thresholds come from `config/scoring-weights.json` → `staleness_thresholds`
+(`flag_weeks`, `escalate_weeks`, `stale_mention_threshold`; shipped as 2 / 6 / 3).
+Quote the configured values, never a remembered number.
 
-**Level 2 (escalated — 4+ weeks stale OR high stale-mention ratio):**
+**Level 1 (flagged — `flag_weeks`+ weeks stale):**
+- State: "[Item] has been at [status] for [N] weeks without progress."
+- Suggest: Check if the blocker is still valid. If yes, name the specific person to ping (look up `config/modules.json` → `categories` by module → `pm`; engineers are whoever `blocked_reason` names).
+
+**Level 2 (escalated — `escalate_weeks`+ weeks stale OR high stale-mention ratio):**
 - State: "[Item] has been stuck for [N] weeks. It's been mentioned in [M] pulse checks with progress in only [P]."
 - Suggest one of:
   - **Escalate to PM** — if the blocker is a scope or priority decision
   - **Ping [specific engineer]** — if the blocker is technical and the person is named in `blocked_reason`
-  - **Descope or backburner** — if the item has been blocked 6+ weeks with no movement
+  - **Descope or backburner** — if the item has shown no movement since it escalated
   - **Close** — if the risk has been superseded by other work
 
 ## Step 3 — Write the priority dashboard

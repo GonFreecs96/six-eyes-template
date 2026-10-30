@@ -27,6 +27,7 @@ flowchart LR
 - Backlog: `data/backlog/{ID}-{slug}.md` with YAML frontmatter (see manifest schema notes).
 - Pulse: `data/pulse-checks/YYYY-Www-pulse.md`
 - Deep dive: `data/deep-dives/YYYY-Www-{slug}.md`
+- Retro: `data/retros/YYYY-Www-retro.md` (written by `/retro`)
 - Staging: `data/staging/staged/` until `scripts/six-eyes-promote.py`
 
 ## Context layer

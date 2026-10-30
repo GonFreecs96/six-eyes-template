@@ -28,7 +28,7 @@ One row per category present in the backlog (omit any with no items):
 | Platform    | N      | N       | N        | N          |
 
 ### Escalation Flags
-Items at or above escalation threshold (stale_weeks ≥ 4 or escalation_level > 0):
+Items at or above escalation threshold (stale_weeks ≥ `escalate_weeks` from `config/scoring-weights.json`, or escalation_level > 0):
 - [item-id] [title] — [stale_weeks]w stale, level [N]
 
 ### Cross-Module Registry

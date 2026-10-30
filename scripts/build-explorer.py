@@ -231,8 +231,12 @@ def build():
     bq_tables, gotchas = load_bq()
     counts, last_run = load_meta(items)
     today = date.today()
+    thresholds = json.loads((REPO / "config" / "scoring-weights.json").read_text())["staleness_thresholds"]
 
     repl = {
+        "__FLAG_WEEKS__": str(thresholds["flag_weeks"]),
+        "__ESCALATE_WEEKS__": str(thresholds["escalate_weeks"]),
+        "__MENTION_THRESHOLD__": str(thresholds["stale_mention_threshold"]),
         "__ITEMS_JSON__": js(items),
         "__SIGNALS_JSON__": js(signals),
         "__BQ_JSON__": js(bq_tables),
@@ -507,9 +511,9 @@ ul li::marker{color:var(--color-text-tertiary)}
   </div>
   <h3>Staleness &amp; escalation ladder</h3>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(205px,1fr))">
-    <div class="card"><h4><span class="pill" style="background:var(--color-background-warning);color:var(--color-text-warning)">level 1</span>2 weeks no progress</h4><p>Yellow indicator on the dashboard - flagged for a look.</p></div>
-    <div class="card"><h4><span class="pill" style="background:var(--color-background-danger);color:var(--color-text-danger)">level 2</span>4 weeks no progress</h4><p>Weekly brief explicitly recommends descope / reassign / escalate.</p></div>
-    <div class="card"><h4><span class="pill" style="background:var(--color-background-danger);color:var(--color-text-danger)">immediate</span>3+ mentions, no progress</h4><p>Escalates regardless of weeks (level 2 if score &gt; 60) - a decision bottleneck, not slow progress.</p></div>
+    <div class="card"><h4><span class="pill" style="background:var(--color-background-warning);color:var(--color-text-warning)">level 1</span>__FLAG_WEEKS__ weeks no progress</h4><p>Yellow indicator on the dashboard - flagged for a look.</p></div>
+    <div class="card"><h4><span class="pill" style="background:var(--color-background-danger);color:var(--color-text-danger)">level 2</span>__ESCALATE_WEEKS__ weeks no progress</h4><p>Weekly brief explicitly recommends descope / reassign / escalate.</p></div>
+    <div class="card"><h4><span class="pill" style="background:var(--color-background-danger);color:var(--color-text-danger)">immediate</span>__MENTION_THRESHOLD__+ mentions, no progress</h4><p>Escalates regardless of weeks (level 2 if score &gt; 60) - a decision bottleneck, not slow progress.</p></div>
   </div>
 </section>
 

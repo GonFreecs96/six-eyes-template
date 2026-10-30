@@ -13,16 +13,13 @@ STAGING="data/staging"
 STAGED="$STAGING/staged"
 MANIFEST="$STAGING/run-manifest.md"
 BATCH_CAP=3
-TRIAGE_BUDGET=2.50   # bumped from 2.00 2026-07-01: the real blocker wasn't the model
-                     # pin or budget size — LOCAL_TOOLS lacked "Skill", so the
-                     # "Run the X skill" prompt's Skill-tool call got silently denied
-                     # and the agent fell back to a far pricier hand-reimplementation
-                     # (confirmed via permission_denials in the JSON output). With
-                     # Skill allowlisted, a full triage pass (25 items, all real work
-                     # written: queue + 8 staged frontmatter changes) cost $2.0733 —
-                     # a 3.6% near-miss of $2.00 from a trailing wrap-up turn, same
-                     # pattern as the $1.50 cap before it. 2.50 gives that turn room.
-                     # Incremental triage (the default here) normally costs far less.
+TRIAGE_BUDGET=2.50   # A full triage pass over ~25 items lands just under $2.00 and
+                     # then spends a trailing wrap-up turn; the headroom is for that
+                     # turn, not for more work. If triage blows this cap, check the
+                     # JSON output's permission_denials before raising it — a tool
+                     # missing from LOCAL_TOOLS makes the agent hand-reimplement the
+                     # skill at several times the cost. Incremental triage (the
+                     # default here) normally costs far less.
 CHECKS_BUDGET=1.00   # Due-checks step: read-only Jira/Confluence lookups, batched. Runs
                      # only when the staged queue reports checks due.
 PER_ITEM_BUDGET=1.25 # One investigate step per item, up to BATCH_CAP items.
@@ -59,10 +56,10 @@ export SIXEYES_MANIFEST="$MANIFEST"
 
 # Skill must be on the allow list: the run_step prompts say "Run the X skill",
 # so the agent naturally reaches for the Skill tool. Without it here, that call
-# is not pre-approved (--allowedTools is an allow list, and -p mode has no prompt to approve it) and the agent falls back to
-# hand-reimplementing the skill via Read/Write/Edit/Bash — far more turns/tokens
-# than just invoking it (observed: a triage run hit error_max_turns at $1.96/20
-# turns after exactly this denial).
+# is not pre-approved (--allowedTools is an allow list, and -p mode has no prompt
+# to approve it) and the agent falls back to hand-reimplementing the skill via
+# Read/Write/Edit/Bash — far more turns/tokens than just invoking it, typically
+# ending in error_max_turns.
 # Grep,Glob added with the next-step rework: the skills search the backlog and
 # warehouse-knowledge files, so they must be on the allow list too.
 LOCAL_TOOLS="Read,Write,Edit,Bash,Skill,Grep,Glob"
@@ -73,11 +70,17 @@ LOCAL_TOOLS="Read,Write,Edit,Bash,Skill,Grep,Glob"
 # so every step also gets an explicit DENY_TOOLS list via --disallowedTools: the Atlassian
 # and Slack write/send tools. Confirmed against `claude --help`: --disallowedTools takes a
 # comma- or space-separated list of tool names.
-ATL="mcp__895f69c7-ac57-481d-983c-2083485b3062"
-SLK="mcp__20369ed0-bc95-447b-9156-a036637c58d0"
+#
+# MCP tool names are `<server prefix>__<tool>`. The prefix is `mcp__<server name>` for a
+# server configured in .mcp.json / .cursor/mcp.json (defaults below match those names);
+# a claude.ai connector gets `mcp__<connector uuid>` instead. Set the env vars to your
+# own prefixes (see config/six-eyes.env.example) — a wrong prefix means the deny list
+# matches nothing and the checks step gets no Atlassian tools at all.
+ATL="${SIX_EYES_MCP_ATLASSIAN:-mcp__atlassian}"
+SLK="${SIX_EYES_MCP_SLACK:-mcp__slack}"
 DENY_TOOLS="${ATL}__editJiraIssue,${ATL}__addCommentToJiraIssue,${ATL}__transitionJiraIssue,${ATL}__createJiraIssue,${ATL}__addWorklogToJiraIssue,${ATL}__createIssueLink,${ATL}__updateConfluencePage,${ATL}__createConfluencePage,${ATL}__createConfluenceFooterComment,${ATL}__createConfluenceInlineComment,${SLK}__slack_send_message,${SLK}__slack_schedule_message,${SLK}__slack_send_message_draft,${SLK}__slack_create_canvas,${SLK}__slack_update_canvas"
 
-CHECKS_TOOLS="$LOCAL_TOOLS,mcp__895f69c7-ac57-481d-983c-2083485b3062__getJiraIssue,mcp__895f69c7-ac57-481d-983c-2083485b3062__searchJiraIssuesUsingJql,mcp__895f69c7-ac57-481d-983c-2083485b3062__getConfluencePage,mcp__895f69c7-ac57-481d-983c-2083485b3062__searchConfluenceUsingCql"
+CHECKS_TOOLS="$LOCAL_TOOLS,${ATL}__getJiraIssue,${ATL}__searchJiraIssuesUsingJql,${ATL}__getConfluencePage,${ATL}__searchConfluenceUsingCql"
 
 run_step () {
   local label="$1" prompt="$2" tools="$3" turns="$4" budget="$5" out="$6"
@@ -144,11 +147,10 @@ for r in rows[:cap]:
 }
 
 # Step 1: Agent Triage — incremental (items never assessed or touched since their
-# last assessment), not --all. turns bumped 20->30 2026-07-13: hit error_max_turns at 21
-# turns/$1.57 (well under the $2.50 budget) with a 45-item backlog (up from 25 at the
-# last tuning pass) — 11 frontmatter diffs staged but the queue file itself never got
-# written. Turns, not budget, was the binding constraint here, same shape as the
-# six-eyes-run opportunity-scan/staleness-check turn-cap fixes.
+# last assessment), not --all. Turn cap 30: on a backlog of ~45 items, triage runs
+# out of turns well before it runs out of budget, and the queue file is written
+# last — so a turn-cap miss stages the frontmatter diffs but never the queue.
+# When this step fails, check turns before budget.
 run_step "Step 1: Agent Triage" \
   "Run the agent-triage skill INCREMENTALLY in STAGING MODE (not --all; see the skill's 'Staging mode' section). Do not present a gate; stage the queue + any frontmatter changes and append to the run manifest." \
   "$LOCAL_TOOLS" \

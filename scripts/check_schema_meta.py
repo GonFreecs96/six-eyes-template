@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Drift enforcement for the `meta.business_rules` blocks in config/schemas/*.yml.
 
-Six Eyes agentic-roadmap item #4.5. Item #4 added a `meta:` block to each of the
-five config/schemas/*.yml reference schemas. Every `business_rules[]` entry there
+Each of the five config/schemas/*.yml reference schemas carries a `meta:` block.
+Every `business_rules[]` entry there
 carries an `id`, a `source:` pointer of the form
 ``config/context/<file>.yaml#<id>`` (or, for a feed cutover, a file + a
 ``(YYYY-MM-DD <label>)`` parenthetical), an `applies_to_columns:` list and a

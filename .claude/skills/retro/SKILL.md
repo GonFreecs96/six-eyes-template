@@ -39,8 +39,8 @@ do this week?"*.
 It reasons over the system's own operating history (run records, pulse-mention time
 series, escalations, resolutions) and proposes concrete, review-gated changes to the
 system's configuration and instructions. It is the implementation of the "broader
-retro habit" the architecture deferred (ARCHITECTURE §12.5) and the time-gated tuning
-reviews (§12.3, §12.4), and it's the consumer that `close-loop` was instrumented for
+retro habit" the architecture roadmap defers (`docs/ARCHITECTURE.md` → Roadmap) and the
+time-gated scoring and threshold reviews, and it's the consumer that `close-loop` was instrumented for
 ("the `retro` skill to reason about throughput").
 
 ## Invocation
@@ -48,7 +48,7 @@ reviews (§12.3, §12.4), and it's the consumer that `close-loop` was instrument
 ```
 /retro            # run a full retrospective for the current ISO week
 /retro <YYYY>-W<WW>   # run/redo a retro stamped to a specific week
-/retro tune       # weight/threshold bucket only (the empirical §12.3/12.4 pass)
+/retro tune       # weight/threshold bucket only (the empirical scoring/threshold pass)
 ```
 
 ## Boundaries — what this skill NEVER does
@@ -108,7 +108,7 @@ date +%G-W%V
    Also query the **`score_history`** table (one snapshot per item per sync day:
    `priority_score`, the three dimensions, `stale_weeks`, `escalation_level`, `status`)
    for scores *as they were* at decision time — this removes the snapshot-vs-historical
-   caveat that confined the §12.3/§12.4 empirical passes through 2026-W29. The
+   caveat that limits the empirical scoring/threshold passes before `score_history` exists. The
    **`items`** table remains the current snapshot (status, the three dimensions,
    `priority_score`, `escalation_level`, `mention_count`, `progress_count`,
    `stale_weeks`, `agent_next_step`, `agent_step_type`, `agent_step_check`, `agent_step_as_of`).
@@ -125,7 +125,7 @@ date +%G-W%V
    gotchas are candidates for promotion into CLAUDE.md (bucket 1).
 6. The current state of the four edit targets: `CLAUDE.md`,
    `config/scoring-weights.json`, the relevant `SKILL.md` files, and
-   `docs/ARCHITECTURE.md` §12.
+   `docs/ARCHITECTURE.md` (Roadmap section).
 
 Summarize the window up front in the retro doc: weeks covered, # runs by workflow type,
 items escalated, items resolved, net backlog movement.
@@ -138,11 +138,11 @@ Produce a proposal for each bucket. A bucket with nothing to propose is stated a
 ### Bucket 1 — CLAUDE.md edits
 Look for: recurring `bq-knowledge.md` gotchas that have shown up enough to earn a place
 in the always-loaded instructions; contact/role/module drift (people who left, PMs who
-changed, channels that moved) visible in run history vs. the `docs/contacts.md` roster; tables
+changed, channels that moved) visible in run history vs. the `pm` roster in `config/modules.json`; tables
 or quick-reference rows that are now wrong. Output a concrete diff to `CLAUDE.md`.
 
 ### Bucket 2 — Scoring-weights & staleness-threshold tuning (empirical, best-effort)
-Run the **§12.3 test**: *are high-`priority_score` items actually the ones that got
+Run the **scoring test**: *are high-`priority_score` items actually the ones that got
 worked next?*
 
 - "Worked next" = items whose backlog file got a **non-automated commit** in the window
@@ -156,7 +156,7 @@ worked next?*
   Are `priority_score > 60` items over-represented in worked items? Are there
   high-worked, low-score items (a sign a dimension is under-weighted) or high-score,
   never-touched items (over-weighted)?
-- Run the **§12.4 test** on thresholds: did escalations (`escalation_level` bumps) feel
+- Run the **threshold test**: did escalations (`escalation_level` bumps) feel
   right, or was the system too noisy / too quiet? Baseline is whatever
   `config/scoring-weights.json` currently holds — read it, don't assume defaults.
 - **Check for saturation, not just individual bumps.** If a large share of non-terminal
@@ -188,7 +188,7 @@ From the run history, find steps in existing skills that are consistently correc
 skipped, or worked around (e.g. a check that always has to be redone, an instruction
 that's regularly overridden). Output a diff to the specific `SKILL.md`.
 
-### Bucket 5 — ARCHITECTURE roadmap upkeep (§12)
+### Bucket 5 — ARCHITECTURE roadmap upkeep
 Keep `docs/ARCHITECTURE.md` honest: mark deferred items that have shipped as
 IMPLEMENTED, retire items that are dead, and add newly-surfaced deferred items
 (including any from the bucket-2 caveat). Output a diff to `docs/ARCHITECTURE.md`.
@@ -218,7 +218,7 @@ Present the full analysis in-conversation first. On the operator's approval, wri
 {summary + the diff, or "No change proposed — {reason}"}
 
 ### 2. Scoring-weights & thresholds
-{the §12.3/§12.4 numbers, the caveat, the diff or "No change proposed — {reason}"}
+{the scoring/threshold numbers, the caveat, the diff or "No change proposed — {reason}"}
 
 ### 3. New-skill / skill-change candidates
 {prose proposals, or "None this cycle"}
@@ -226,7 +226,7 @@ Present the full analysis in-conversation first. On the operator's approval, wri
 ### 4. SKILL.md procedure fixes
 {summary + diff, or "No change proposed — {reason}"}
 
-### 5. ARCHITECTURE roadmap (§12)
+### 5. ARCHITECTURE roadmap
 {summary + diff, or "No change proposed — {reason}"}
 
 ## Decisions

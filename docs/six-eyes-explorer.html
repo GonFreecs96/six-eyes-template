@@ -125,13 +125,13 @@ ul li::marker{color:var(--color-text-tertiary)}
 <body>
 <div class="page">
 <div class="se-wrap">
-<h2 class="sr-only">Interactive explorer for Six Eyes: an overview, the three-layer architecture, the workflow skill catalog, the five-category model with priority scoring, the cross-module signal graph, the BigQuery table reference, and a live snapshot of the 10-item backlog as of 18 Oct 2026.</h2>
+<h2 class="sr-only">Interactive explorer for Six Eyes: an overview, the three-layer architecture, the workflow skill catalog, the five-category model with priority scoring, the cross-module signal graph, the BigQuery table reference, and a live snapshot of the 10-item backlog as of 30 Oct 2026.</h2>
 <div class="se-h">
   <div>
     <p class="se-title"><i class="ti ti-eye" aria-hidden="true"></i>Six Eyes - interactive explorer</p>
     <p class="se-tag">A Claude-first analytics intelligence template for Acme (subscription app): composable skills, read-only warehouse checks, and a self-scoring backlog.</p>
   </div>
-  <div class="se-stamp">Live snapshot<br>18 Oct 2026 &middot; last run 13 Oct</div>
+  <div class="se-stamp">Live snapshot<br>30 Oct 2026 &middot; last run 13 Oct</div>
 </div>
 <div class="se-nav">
   <button class="on" data-nav="overview" onclick="show('overview')"><i class="ti ti-eye" aria-hidden="true"></i>Overview</button>
@@ -249,7 +249,7 @@ ul li::marker{color:var(--color-text-tertiary)}
   <h3>Staleness &amp; escalation ladder</h3>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(205px,1fr))">
     <div class="card"><h4><span class="pill" style="background:var(--color-background-warning);color:var(--color-text-warning)">level 1</span>2 weeks no progress</h4><p>Yellow indicator on the dashboard - flagged for a look.</p></div>
-    <div class="card"><h4><span class="pill" style="background:var(--color-background-danger);color:var(--color-text-danger)">level 2</span>4 weeks no progress</h4><p>Weekly brief explicitly recommends descope / reassign / escalate.</p></div>
+    <div class="card"><h4><span class="pill" style="background:var(--color-background-danger);color:var(--color-text-danger)">level 2</span>6 weeks no progress</h4><p>Weekly brief explicitly recommends descope / reassign / escalate.</p></div>
     <div class="card"><h4><span class="pill" style="background:var(--color-background-danger);color:var(--color-text-danger)">immediate</span>3+ mentions, no progress</h4><p>Escalates regardless of weeks (level 2 if score &gt; 60) - a decision bottleneck, not slow progress.</p></div>
   </div>
 </section>
@@ -277,7 +277,7 @@ ul li::marker{color:var(--color-text-tertiary)}
 </section>
 
 <section class="se-sec" id="sec-backlog" style="display:none">
-  <p class="se-lead">The actual backlog as of 18 Oct 2026 - 10 tracked items. Filter by category, toggle escalated-only, and re-sort. Click any item to see its dimensions, blockers, and dig in.</p>
+  <p class="se-lead">The actual backlog as of 30 Oct 2026 - 10 tracked items. Filter by category, toggle escalated-only, and re-sort. Click any item to see its dimensions, blockers, and dig in.</p>
   <div class="grid" id="blMetrics" style="grid-template-columns:repeat(auto-fit,minmax(135px,1fr));margin-bottom:6px"></div>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:1rem 0">
     <div class="card">
@@ -312,7 +312,7 @@ ul li::marker{color:var(--color-text-tertiary)}
   <div id="items"></div>
 </section>
 </div>
-<p class="muted" style="text-align:center;margin-top:30px">Generated 18 Oct 2026 by <span class="mono">scripts/build-explorer.py</span> &middot; static snapshot of the Six Eyes repo</p>
+<p class="muted" style="text-align:center;margin-top:30px">Generated 30 Oct 2026 by <span class="mono">scripts/build-explorer.py</span> &middot; static snapshot of the Six Eyes repo</p>
 </div>
 <div class="toast" id="seToast"></div>
 <script>

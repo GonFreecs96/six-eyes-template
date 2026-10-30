@@ -16,7 +16,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from dashboard_helpers import (
-    is_bad_step_value, normalize_step_field, parse_as_of,
+    ITEM_ID_RE, is_bad_step_value, normalize_step_field, parse_as_of,
 )
 
 try:
@@ -39,10 +39,11 @@ def load_weights():
     with open(WEIGHTS_PATH) as f:
         cfg = json.load(f)
     w = cfg["weights"]
-    t = cfg.get("staleness_thresholds", {})
+    # config/scoring-weights.json is the single source for thresholds; no code
+    # defaults, so a missing key fails loudly instead of drifting from the docs.
+    t = cfg["staleness_thresholds"]
     return (w["business_impact"], w["time_sensitivity"], w["data_readiness"],
-            t.get("flag_weeks", 2), t.get("escalate_weeks", 4),
-            t.get("stale_mention_threshold", 3))
+            t["flag_weeks"], t["escalate_weeks"], t["stale_mention_threshold"])
 
 
 # ---------------------------------------------------------------------------
@@ -106,7 +107,7 @@ def system_active_weeks():
     A week counts as active if it produced a pulse-check file. `stale_weeks` is
     measured in these weeks, not calendar weeks, so an operator absence does not
     age the whole backlog in lockstep — without this, a long idle gap can push
-    many items over escalation thresholds the day pulses resume (ARCHITECTURE §12.4).
+    many items over escalation thresholds the day pulses resume.
     """
     global ACTIVE_WEEKS_CACHE
     if ACTIVE_WEEKS_CACHE is None:
@@ -121,13 +122,16 @@ def system_active_weeks():
     return ACTIVE_WEEKS_CACHE
 
 
-def active_weeks_since(start: date, today: date) -> int:
+def active_weeks_since(start: date, today: date, active=None) -> int:
     """Count system-active weeks strictly after `start`, up to `today`.
 
-    Falls back to plain calendar weeks if no pulse-check archive is present, so
-    a fresh clone or a wiped data/pulse-checks/ still produces sane staleness.
+    `active` defaults to the pulse-check archive (system_active_weeks()); tests
+    pass an explicit set. Falls back to plain calendar weeks if no pulse-check
+    archive is present, so a fresh clone or a wiped data/pulse-checks/ still
+    produces sane staleness.
     """
-    active = system_active_weeks()
+    if active is None:
+        active = system_active_weeks()
     if not active:
         return (today - start).days // 7
     n, cur = 0, start
@@ -142,8 +146,14 @@ def active_weeks_since(start: date, today: date) -> int:
 
 def compute_fields(data: dict, w_bi: float, w_ts: float, w_dr: float,
                    flag_weeks: int, escalate_weeks: int,
-                   stale_mention_threshold: int):
-    today = date.today()
+                   stale_mention_threshold: int, today: date = None,
+                   active_weeks=None):
+    """Return (priority_score, stale_weeks, escalation_level) for one item.
+
+    `today` and `active_weeks` exist for tests; production callers omit both.
+    """
+    if today is None:
+        today = date.today()
 
     # stale_weeks from last_progress, counted in system-active weeks
     raw_lp = data.get("last_progress")
@@ -151,7 +161,7 @@ def compute_fields(data: dict, w_bi: float, w_ts: float, w_dr: float,
         lp = date.fromisoformat(str(raw_lp)) if raw_lp else today
     except ValueError:
         lp = today
-    stale_weeks = active_weeks_since(lp, today)
+    stale_weeks = active_weeks_since(lp, today, active_weeks)
 
     # priority_score
     bi = int(data.get("business_impact") or 0)
@@ -180,9 +190,9 @@ def compute_fields(data: dict, w_bi: float, w_ts: float, w_dr: float,
         escalation_level = max(escalation_level, 2 if priority_score > 60 else 1)
 
     # Closed/resolved/backburner/completed items are done — staleness and mention-gap
-    # accrue on the calendar even after an item stops moving, so without this they'd
-    # silently escalate again on every sync (see retro notes in template docs)
-    # -016/-023 kept resurfacing as escalation candidates after being closed).
+    # accrue on the calendar even after an item stops moving, so without this a
+    # closed item would silently escalate again on every sync and keep resurfacing
+    # as an escalation candidate.
     status = str(data.get("status") or "").strip().lower()
     if status in TERMINAL_STATUSES:
         escalation_level = 0
@@ -419,7 +429,8 @@ def populate_pulse_mentions(conn: sqlite3.Connection):
         except ValueError:
             continue
 
-        # Read file and extract "Opportunity Backlog Updates" sections
+        # Read file and extract "## Backlog Updates" sections (the pulse-scan
+        # skill's section name; see templates and data/pulse-checks/)
         try:
             content = path.read_text(encoding="utf-8")
             lines = content.split("\n")
@@ -431,7 +442,7 @@ def populate_pulse_mentions(conn: sqlite3.Connection):
         i = 0
         while i < len(lines):
             line = lines[i]
-            if line.strip().startswith("## Opportunity Backlog Updates"):
+            if line.strip().startswith("## Backlog Updates"):
                 section_start = i + 1
 
                 # Extract lines until the next ## or EOF
@@ -479,10 +490,10 @@ def _parse_pulse_section(conn: sqlite3.Connection, section_lines: list,
             rest_of_line = bullet_match.group(2)
             full_line = bold_span + rest_of_line
 
-            # Extract all item IDs from the bold span
-            # Left boundary guard: without it, Jira keys like ACMEONB-1103 would
-            # mint phantom ONB-1103 rows.
-            item_ids = re.findall(r"(?<![A-Za-z0-9])(?:ACO|APP|CO|PRE|AH|DT)-\d+", bold_span)
+            # Extract all item IDs from the bold span. ITEM_ID_RE is built from
+            # config/modules.json id_prefix values, with a left-boundary guard so
+            # a Jira key like ACMEONB-1103 cannot mint a phantom ONB-1103 row.
+            item_ids = ITEM_ID_RE.findall(bold_span)
 
             for item_id in item_ids:
                 had_progress = _detect_progress(full_line, arrow_pattern)
@@ -501,10 +512,8 @@ def _parse_pulse_section(conn: sqlite3.Connection, section_lines: list,
         if table_match:
             bold_span = table_match.group(1)
 
-            # Extract all item IDs from the bold span
-            # Left boundary guard: without it, Jira keys like ACMEONB-1103 would
-            # mint phantom ONB-1103 rows.
-            item_ids = re.findall(r"(?<![A-Za-z0-9])(?:ACO|APP|CO|PRE|AH|DT)-\d+", bold_span)
+            # Same prefix-derived regex as the bullet branch.
+            item_ids = ITEM_ID_RE.findall(bold_span)
 
             for item_id in item_ids:
                 had_progress = _detect_progress(line, arrow_pattern)

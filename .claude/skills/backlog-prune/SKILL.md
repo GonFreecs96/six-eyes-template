@@ -40,7 +40,7 @@ alone would propose closing live work.
 ## Boundaries
 
 - **Never invents a stakeholder pause.** `backburner` means *explicitly
-  deprioritized by a stakeholder* (ARCHITECTURE §5.1). Propose it only with quoted
+  deprioritized by a stakeholder*. Propose it only with quoted
   evidence from Notes or `blocked_reason`.
 - **Never touches Notes bodies.** Notes are the source of truth; frontmatter is
   derived bookkeeping. Corrections flow body → frontmatter, never the reverse.
@@ -112,7 +112,7 @@ ORDER BY stale_weeks DESC;
 `stale_weeks >= 6` matches `escalate_weeks` in `config/scoring-weights.json` — a
 prune candidate should already be at escalation level 2 on time alone. Read the
 threshold from config rather than hardcoding it if they ever diverge. Note that
-`stale_weeks` counts **system-active weeks**, not calendar weeks (§12.4), so an idle
+`stale_weeks` counts **system-active weeks**, not calendar weeks, so an idle
 gap does not manufacture candidates.
 
 The other two filters are deliberately conservative — this skill should

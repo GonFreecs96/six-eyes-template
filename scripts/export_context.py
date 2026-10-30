@@ -2,13 +2,10 @@
 """Export the machine-consultable subset of data/bq-knowledge.md into
 config/context/*.yaml.
 
-Six Eyes NOW roadmap item: "bq-knowledge.md -> structured context layer"
-(docs/archive/strategy/agentic-analytics-roadmap.md, track 3 / feeder). bq-knowledge.md stays
-the single human-authored source -- no parallel registry (per
-docs/archive/strategy/analytics_hub_poc_scoping.md Theme 1 "don't build parallel registries",
-and mirroring a governed-repo pattern of rendering a
-structured file FROM an upstream source of truth rather than hand-maintaining
-both).
+bq-knowledge.md stays the single human-authored source -- no parallel registry.
+The YAML is rendered FROM it (the same pattern a governed metrics repo uses for
+its structured files) rather than hand-maintained alongside it; see
+docs/ARCHITECTURE.md "Context layer".
 
 Two input shapes in bq-knowledge.md:
 
