@@ -1,0 +1,15 @@
+{
+  "formula": "weighted",
+  "weights": {
+    "business_impact": 0.40,
+    "time_sensitivity": 0.35,
+    "data_readiness": 0.25
+  },
+  "scale_max": 100,
+  "dimension_range": [1, 5],
+  "staleness_thresholds": {
+    "flag_weeks": 2,
+    "escalate_weeks": 6,
+    "stale_mention_threshold": 3
+  }
+}

@@ -1,0 +1,27 @@
+version: 2
+models:
+  - name: acme_invoices
+    description: Billing invoices and line items (amounts in cents).
+    meta:
+      entity: invoice
+      grain: One row per invoice_id
+      keys:
+        primary: invoice_id
+      business_rules:
+        - id: invoice_amount_cents
+          source: config/context/entity-rules.yaml#invoice_amount_cents
+          applies_to_columns: [amount_cents, line_items]
+          summary: Monetary fields are integer cents; divide by 100 once for dollars.
+        - id: proration_rows_missing
+          source: config/context/entity-rules.yaml#proration_rows_missing
+          applies_to_columns: [line_type, invoice_id]
+          summary: Some post-2026-09-10 upgrades missing proration line rows despite correct totals.
+    columns:
+      - name: invoice_id
+        description: Invoice identifier
+      - name: subscription_id
+        description: Billed subscription
+      - name: amount_cents
+        description: Total invoice amount in cents
+      - name: line_items
+        description: Repeated struct of line_type and amount_cents

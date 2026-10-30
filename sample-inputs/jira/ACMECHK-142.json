@@ -1,0 +1,21 @@
+{
+  "key": "ACMECHK-142",
+  "project": "ACMECHK",
+  "summary": "Instrument payment_method_selected for wallet pay",
+  "status": "In Progress",
+  "assignee": "Marco Chen <marco.chen@example.com>",
+  "labels": [
+    "checkout",
+    "instrumentation"
+  ],
+  "created": "2026-09-01T09:00:00Z",
+  "updated": "2026-10-15T11:00:00Z",
+  "description": "Wallet path bypasses legacy analytics hook.",
+  "comments": [
+    {
+      "author": "Riley Foster",
+      "created": "2026-10-12T14:00:00Z",
+      "body": "Event schema drafted; pending prod deploy."
+    }
+  ]
+}

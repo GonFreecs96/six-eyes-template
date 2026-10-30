@@ -1,0 +1,14 @@
+{
+  "key": "ACMECHK-138",
+  "project": "ACMECHK",
+  "summary": "Rename checkout funnel steps for v3.4",
+  "status": "Done",
+  "assignee": "Marco Chen <marco.chen@example.com>",
+  "labels": [
+    "checkout"
+  ],
+  "created": "2026-08-20T09:00:00Z",
+  "updated": "2026-10-06T18:00:00Z",
+  "description": "Merge payment and confirm steps; map legacy names in analytics.",
+  "comments": []
+}

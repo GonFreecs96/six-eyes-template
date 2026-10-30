@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Six Eyes context-layer drift gate (git pre-commit hook).
+#
+# This is the TRACKED copy of the hook. It is NOT active until installed into
+# .git/hooks/ — run `scripts/install-hooks.sh` once (git does not version-control
+# .git/hooks/). It only runs the check when a relevant source file is staged, so
+# unrelated commits are not slowed down.
+#
+# Bypass in an emergency with `git commit --no-verify` (then fix the drift and
+# re-run scripts/check_context_sync.sh).
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Only gate when something that feeds the context layer is staged.
+if git diff --cached --name-only | grep -Eq \
+  '^(data/bq-knowledge\.md|config/context/.*\.ya?ml|config/schemas/.*|scripts/(export_context|check_schema_meta)\.py)'; then
+  echo "[pre-commit] context-layer inputs changed — verifying sync…"
+  "$REPO_ROOT/scripts/check_context_sync.sh"
+fi

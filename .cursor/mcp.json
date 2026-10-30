@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "atlassian": {
+      "url": "https://your-org.atlassian.net/mcp",
+      "headers": {}
+    },
+    "slack": {
+      "url": "https://slack.example.com/mcp",
+      "headers": {}
+    },
+    "granola": {
+      "url": "https://granola.example.com/mcp",
+      "headers": {}
+    },
+    "github": {
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${env:GITHUB_PAT}"
+      }
+    }
+  }
+}

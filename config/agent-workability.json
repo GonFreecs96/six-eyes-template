@@ -1,0 +1,63 @@
+{
+  "_comment": "Step rubric for /agent-triage and /agent-work on Acme Stream Co.",
+  "fields": {
+    "agent_next_step": "One-line read-only action naming a concrete target, or null when none exists.",
+    "agent_step_type": "investigate | check | null",
+    "agent_step_check": "Human checkpoint before the result is trusted, or null.",
+    "agent_step_as_of": "ISO date the step was last set or re-confirmed; null = never assessed."
+  },
+  "step_sources": {
+    "warehouse": {
+      "what": "BigQuery queries against acme_analytics.* and governed metric catalog (GOVERNED_REPO).",
+      "prefer_in_order": [
+        "scripts/lib/bq_client.py dry-run",
+        "metric-catalog skill"
+      ],
+      "examples": [
+        "Count duplicate trial_started events per user_id in acme_analytics.events for the last 7 days"
+      ]
+    },
+    "definition_audit": {
+      "what": "Read-only audits of config/context, config/schemas, and sibling dbt repo.",
+      "targets": [
+        "$GOVERNED_REPO",
+        "config/context/*.yaml",
+        "config/schemas/"
+      ],
+      "examples": [
+        "Verify invoice line_type enum in acme_invoices matches finance spec"
+      ]
+    },
+    "precondition_check": {
+      "what": "Read-only Jira lookups that settle whether a precondition has happened.",
+      "type": "check",
+      "examples": [
+        "Check ACMECHK-142 fixVersion: if deployed, re-run pay-flow step funnel gap query"
+      ]
+    }
+  },
+  "not_a_step": [
+    "Outreach of any kind \u2014 that's /close-loop",
+    "Waiting with nothing checkable",
+    "Writing to Confluence, Jira, or Slack"
+  ],
+  "concreteness_bar": {
+    "rule": "agent_next_step must name at least one concrete target.",
+    "accepted_targets": {
+      "table_or_metric": "your-gcp-project.acme_analytics.<table> or a registered metric name",
+      "ticket_key": "ACMEONB-123 style key",
+      "file_path": "a repo or GOVERNED_REPO path"
+    }
+  },
+  "step_type_rules": {
+    "investigate": "Produces findings via /agent-work.",
+    "check": {
+      "semantics": "Yes/no precondition test.",
+      "recheck_after_days": 7
+    }
+  },
+  "queue": {
+    "path": "outputs/agent-work-queue.md",
+    "picker_top_n": 3
+  }
+}

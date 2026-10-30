@@ -1,0 +1,31 @@
+version: 2
+models:
+  - name: acme_subscriptions
+    description: Subscription lifecycle snapshots for Acme Stream Co.
+    meta:
+      entity: subscription
+      grain: One row per subscription_id (current snapshot)
+      keys:
+        primary: subscription_id
+      business_rules:
+        - id: subscription_status_history
+          source: config/context/entity-rules.yaml#subscription_status_history
+          applies_to_columns: [status, status_history]
+          summary: Use status_history for churn timing; current status alone undercounts transitions.
+        - id: churn_reason_null_feed
+          source: config/context/entity-rules.yaml#churn_reason_null_feed
+          applies_to_columns: [churn_reason_code, feed_version]
+          summary: churn_reason_code NULL after feed v3 cutover until backfill.
+    columns:
+      - name: subscription_id
+        description: Primary subscription key
+      - name: user_id
+        description: Account owner
+      - name: plan_tier
+        description: Paid plan tier
+      - name: status
+        description: Current subscription status
+      - name: status_history
+        description: JSON array of status transitions
+      - name: churn_reason_code
+        description: Reason code from lifecycle feed

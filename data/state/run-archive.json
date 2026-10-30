@@ -1,0 +1,25 @@
+[
+  {
+    "timestamp": "2026-10-13T18:00:00Z",
+    "module": "all",
+    "workflow": "six-eyes-run",
+    "sub_skills": [
+      "pulse-scan",
+      "opportunity-scan",
+      "staleness-check",
+      "weekly-brief"
+    ],
+    "items_updated": 5,
+    "items_created": 0,
+    "pulse_check": "data/pulse-checks/2026-W42-pulse.md",
+    "staging": {
+      "manifest": "data/staging/run-manifest.md",
+      "staged_paths": [
+        "data/staging/staged/data/pulse-checks/2026-W42-pulse.md",
+        "data/staging/staged/data/state/last-run-summary.md"
+      ],
+      "promote_status": "pending_review"
+    },
+    "notes": "Demo completed weekly run for template"
+  }
+]

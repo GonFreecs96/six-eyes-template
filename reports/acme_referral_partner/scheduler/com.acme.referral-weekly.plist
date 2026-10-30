@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.acme.referral-weekly</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>/PATH/TO/six-eyes-template/reports/acme_referral_partner/build_report.py</string>
+    <string>--output-dir</string>
+    <string>/PATH/TO/six-eyes-template/outputs/reports</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key>
+    <integer>1</integer>
+    <key>Hour</key>
+    <integer>6</integer>
+    <key>Minute</key>
+    <integer>30</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/PATH/TO/six-eyes-template/outputs/reports/referral-weekly.log</string>
+  <key>StandardErrorPath</key>
+  <string>/PATH/TO/six-eyes-template/outputs/reports/referral-weekly.err</string>
+</dict>
+</plist>

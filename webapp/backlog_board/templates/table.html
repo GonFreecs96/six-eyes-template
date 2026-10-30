@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="table-controls">
+    <form method="GET" action="/" class="filter-form">
+        <div class="form-group">
+            <label for="module">Module:</label>
+            <select name="module" id="module">
+                <option value="all" {% if current_module == 'all' %}selected{% endif %}>All</option>
+                {% for mod_id, mod_name in module_options.items() %}
+                <option value="{{ mod_id }}" {% if current_module == mod_id %}selected{% endif %}>{{ mod_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select name="status" id="status">
+                <option value="__active__" {% if current_status == '__active__' %}selected{% endif %}>Active (default)</option>
+                <option value="all" {% if current_status == 'all' %}selected{% endif %}>All (incl. closed/backburner)</option>
+                {% for st in status_options %}
+                <option value="{{ st }}" {% if current_status == st %}selected{% endif %}>{{ st }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="esc_only">
+                <input type="checkbox" name="esc_only" id="esc_only" value="1" {% if esc_only_checked %}checked{% endif %}>
+                Escalated only (esc ≥ 1)
+            </label>
+        </div>
+
+        <button type="submit" class="btn-primary">Filter</button>
+    </form>
+
+    <form method="POST" action="/refresh" class="refresh-form">
+        <input type="hidden" name="next" value="{{ request.full_path }}">
+        <button type="submit" class="btn-secondary">🔄 Refresh</button>
+    </form>
+</div>
+
+<table class="backlog-table">
+    <thead>
+        <tr>
+            <th><a href="{{ qs(sort='id', dir='asc' if current_sort == 'id' and current_dir == 'desc' else 'desc') }}">ID + Title</a></th>
+            <th><a href="{{ qs(sort='module', dir='asc' if current_sort == 'module' and current_dir == 'desc' else 'desc') }}">Module</a></th>
+            <th><a href="{{ qs(sort='score', dir='asc' if current_sort == 'score' and current_dir == 'desc' else 'desc') }}">Priority</a></th>
+            <th><a href="{{ qs(sort='status', dir='asc' if current_sort == 'status' and current_dir == 'desc' else 'desc') }}">Status</a></th>
+            <th><a href="{{ qs(sort='stale', dir='asc' if current_sort == 'stale' and current_dir == 'desc' else 'desc') }}">Stale Wks</a></th>
+            <th>Mention Gap</th>
+            <th>Agent</th>
+            <th>Next agent step</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td class="id-title-cell">
+                <strong><a href="/item/{{ item.id }}">{{ item.id }}</a></strong> — {{ item.title }}
+            </td>
+            <td>{{ module_options.get(item.module, item.module) }}</td>
+            <td class="priority-cell">
+                <span class="priority-dot">{{ priority_dot(item.priority_score) }}</span>
+                <span class="priority-score">{{ item.priority_score | int }}</span>
+            </td>
+            <td>{{ status_label(item.status, item.escalation_level) }}</td>
+            <td class="numeric">{{ item.stale_weeks }}</td>
+            <td class="numeric">{{ item.mention_gap }}</td>
+            {% set st = agent_step(item) %}
+            <td class="badge" title="{{ st.label }}">{{ st.badge }}</td>
+            <td class="agent-step-cell"{% if st.step %} title="{{ st.step }}"{% endif %}>{% if st.step %}{{ st.step | truncate(60, True, '…') }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if not items %}
+<p class="empty-state">No items match the current filters.</p>
+{% endif %}
+{% endblock %}

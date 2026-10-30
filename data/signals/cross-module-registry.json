@@ -1,0 +1,44 @@
+{
+  "links": [
+    {
+      "id_a": "ONB-001",
+      "id_b": "PLT-009",
+      "type": "item-pair",
+      "description": "Trial-start KPIs feed partner conversion denominators; duplicate trial events inflate Zanybyte attributed trial rate slightly.",
+      "confidence": 3,
+      "first_detected": "2026-10-05",
+      "last_confirmed": "2026-10-13",
+      "source": "opportunity-scan W42"
+    },
+    {
+      "id_a": "CHK-003",
+      "id_b": "ONB-002",
+      "type": "item-pair",
+      "description": "Pay-flow funnel gap on promo step correlates with anonymous_id drop after signup; same session stitching issue.",
+      "confidence": 2,
+      "first_detected": "2026-09-20",
+      "last_confirmed": "2026-10-08",
+      "source": "meeting-ingest 2026-10-08"
+    },
+    {
+      "id_a": "BIL-005",
+      "id_b": "LIF-007",
+      "type": "item-pair",
+      "description": "Upgrade proration gaps and churn feed v3 both touch subscription economics reporting — coordinate backfill windows.",
+      "confidence": 3,
+      "first_detected": "2026-10-12",
+      "last_confirmed": "2026-10-14",
+      "source": "deep-dive cross-link"
+    },
+    {
+      "id_a": "PLT-009",
+      "id_b": "onboarding",
+      "type": "module-level",
+      "description": "Partner attribution windows affect signup and trial-start module metrics.",
+      "confidence": 4,
+      "first_detected": "2026-09-12",
+      "last_confirmed": "2026-10-11",
+      "source": "frontmatter cross_modules"
+    }
+  ]
+}

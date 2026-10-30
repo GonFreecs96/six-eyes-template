@@ -1,0 +1,13 @@
+# Runtime mode and warehouse placeholders for Six Eyes template (Acme demo).
+# Override with env: SIX_EYES_MODE, SIX_EYES_BQ_PROJECT, SIX_EYES_BQ_DATASET, GOVERNED_REPO.
+
+mode: offline  # offline | live
+
+bigquery:
+  project: your-gcp-project
+  dataset: acme_analytics
+  max_bytes_billed: 1000000000
+
+governed_repo: null
+
+sample_inputs_dir: sample-inputs

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="kanban-controls">
+    <form method="GET" action="/kanban" class="filter-form">
+        <div class="form-group">
+            <label for="module">Module:</label>
+            <select name="module" id="module">
+                <option value="all" {% if current_module == 'all' %}selected{% endif %}>All</option>
+                {% for mod_id, mod_name in module_options.items() %}
+                <option value="{{ mod_id }}" {% if current_module == mod_id %}selected{% endif %}>{{ mod_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn-primary">Filter</button>
+    </form>
+
+    <form method="POST" action="/refresh" class="refresh-form">
+        <input type="hidden" name="next" value="{{ request.full_path }}">
+        <button type="submit" class="btn-secondary">🔄 Refresh</button>
+    </form>
+</div>
+
+<div class="kanban-board">
+    {% for status, items in columns %}
+    <div class="kanban-column">
+        <div class="column-header">{{ status }} ({{ items | length }})</div>
+        <div class="column-cards">
+            {% for item in items %}
+            <div class="kanban-card">
+                <div class="card-header">
+                    <a href="/item/{{ item.id }}" class="card-id">{{ item.id }}</a>
+                    <span class="card-title">{{ item.title }}</span>
+                </div>
+                <div class="card-meta">
+                    <span class="priority-dot">{{ priority_dot(item.priority_score) }}</span>
+                    <span class="priority-score">{{ item.priority_score | int }}</span>
+                    {% set st = agent_step(item) %}
+                    <span class="agent-badge" title="{{ st.label }}">{{ st.badge }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{
+  "_comment": "Optional watchlist for /repo-sync against GOVERNED_REPO (metric catalog). Paths are placeholders until first sync.",
+  "last_synced": null,
+  "models": {
+    "int_subscription_churn.sql": {
+      "path": "dbt/models/intermediate/int_subscription_churn.sql",
+      "last_known_hash": null,
+      "why": "Feeds churn_reason_code semantics tracked in LIF-007.",
+      "added": "2026-10-13",
+      "source": "LIF-007"
+    }
+  }
+}

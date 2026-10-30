@@ -1,0 +1,13 @@
+---
+description: Six Eyes template — load Claude skills and guardrails
+globs:
+alwaysApply: true
+---
+
+# Six Eyes template
+
+- Read `CLAUDE.md` and `AGENTS.md` for routing.
+- Skills live under `.claude/skills/` — invoke by skill name; do not duplicate skill bodies here.
+- Outbound writes (Slack send, Jira/Confluence mutate) require explicit human approval; drafts only.
+- Warehouse prompts: respect `config/context/*.yaml` injected by hooks.
+- Example company is **Acme** (subscription app); keep all example content fictional and domain-neutral.

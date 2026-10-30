@@ -1,0 +1,85 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__*__getJiraIssue",
+      "mcp__*__searchJiraIssuesUsingJql",
+      "mcp__*__getTransitionsForJiraIssue",
+      "mcp__*__getJiraIssueRemoteIssueLinks",
+      "mcp__*__getVisibleJiraProjects",
+      "mcp__*__lookupJiraAccountId",
+      "mcp__*__getConfluencePage",
+      "mcp__*__getConfluencePageDescendants",
+      "mcp__*__getConfluencePageFooterComments",
+      "mcp__*__getPagesInConfluenceSpace",
+      "mcp__*__getConfluenceSpaces",
+      "mcp__*__searchConfluenceUsingCql",
+      "mcp__*__atlassianUserInfo",
+      "mcp__*__getAccessibleAtlassianResources",
+      "mcp__*__slack_read_channel",
+      "mcp__*__slack_read_thread",
+      "mcp__*__slack_read_user_profile",
+      "mcp__*__slack_read_canvas",
+      "mcp__*__slack_search_public",
+      "mcp__*__slack_search_public_and_private",
+      "mcp__*__slack_search_channels",
+      "mcp__*__slack_search_users",
+      "mcp__*__list_meetings",
+      "mcp__*__get_meetings",
+      "mcp__*__get_meeting_transcript",
+      "mcp__*__list_meeting_folders",
+      "mcp__*__query_granola_meetings",
+      "Bash(unset GOOGLE_APPLICATION_CREDENTIALS)",
+      "Bash(./scripts/check_context_sync.sh *)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/claude-hooks/ensure-git-hooks.sh\"",
+            "timeout": 15,
+            "statusMessage": "Checking git pre-commit hook"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/claude-hooks/sync-backlog-metadata.sh\" --no-rotate",
+            "timeout": 60,
+            "statusMessage": "Syncing backlog metadata"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/claude-hooks/inject-bq-context.py\"",
+            "timeout": 5,
+            "statusMessage": "Matching warehouse context rules"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "^mcp__.*__(slack_send_message|slack_schedule_message|slack_create_canvas|slack_update_canvas|updateConfluencePage|createConfluencePage|createConfluenceFooterComment|createConfluenceInlineComment|addCommentToJiraIssue|createJiraIssue|editJiraIssue|transitionJiraIssue|addWorklogToJiraIssue|createIssueLink|createCompass\\w+|addTeamworkGraphContext)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"ask\",\"permissionDecisionReason\":\"Six Eyes outbound guard: Slack/Jira/Confluence writes require explicit per-action approval (CLAUDE.md); allowlist entries do not bypass this. In headless runs this is a hard deny.\"}}'",
+            "statusMessage": "Outbound guard"
+          }
+        ]
+      }
+    ]
+  }
+}

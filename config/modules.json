@@ -1,0 +1,89 @@
+{
+  "atlassian_cloud_id": "00000000-0000-0000-0000-000000000001",
+  "categories": [
+    {
+      "id": "onboarding",
+      "name": "Onboarding",
+      "type": "product_module",
+      "id_prefix": "ONB",
+      "pm": "Elena Voss",
+      "active": true,
+      "description": "Signup, identity, trial start, and first-session instrumentation",
+      "routing_hint": "signup funnel, trial events, email verification, profile completion"
+    },
+    {
+      "id": "checkout",
+      "name": "Checkout",
+      "type": "product_module",
+      "id_prefix": "CHK",
+      "pm": "Marco Chen",
+      "active": true,
+      "description": "Plan selection, payment method, and checkout step analytics",
+      "routing_hint": "checkout steps, payment method, promo codes, cart abandonment"
+    },
+    {
+      "id": "billing",
+      "name": "Billing",
+      "type": "product_module",
+      "id_prefix": "BIL",
+      "pm": "Priya Nair",
+      "active": true,
+      "description": "Invoices, proration, renewals, and payment success",
+      "routing_hint": "invoices, proration, dunning, renewal reminders"
+    },
+    {
+      "id": "lifecycle",
+      "name": "Lifecycle",
+      "type": "product_module",
+      "id_prefix": "LIF",
+      "pm": "Jordan Blake",
+      "active": true,
+      "description": "Retention, churn, win-back, and subscription state",
+      "routing_hint": "churn reasons, cancellations, pauses, upgrades"
+    },
+    {
+      "id": "platform",
+      "name": "Platform",
+      "type": "work_category",
+      "id_prefix": "PLT",
+      "pm": "Sam Ortiz",
+      "active": true,
+      "description": "Data platform, partner feeds, and cross-cutting warehouse quality",
+      "routing_hint": "dbt models, event pipelines, partner attribution, governed metrics"
+    }
+  ],
+  "scan_sources": {
+    "jira": [
+      {
+        "project_key": "ACMEONB",
+        "categories": [
+          "onboarding"
+        ]
+      },
+      {
+        "project_key": "ACMECHK",
+        "categories": [
+          "checkout"
+        ]
+      },
+      {
+        "project_key": "ACMEBIL",
+        "categories": [
+          "billing"
+        ]
+      },
+      {
+        "project_key": "ACMELIF",
+        "categories": [
+          "lifecycle"
+        ]
+      },
+      {
+        "project_key": "ACMEPLT",
+        "categories": [
+          "platform"
+        ]
+      }
+    ]
+  }
+}

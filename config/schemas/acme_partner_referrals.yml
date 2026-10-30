@@ -1,0 +1,23 @@
+version: 2
+models:
+  - name: acme_partner_referrals
+    description: Partner referral clicks and attributed signups (Zanybyte and others).
+    meta:
+      entity: partner
+      grain: One row per ref_click_id
+      keys:
+        primary: ref_click_id
+      business_rules:
+        - id: partner_attribution_window
+          source: config/context/integration-payload-traps.yaml#partner_attribution_window
+          applies_to_columns: [ref_click_id, attribution_window_days, partner_code]
+          summary: Default 7-day window; Zanybyte podcast campaigns use 14 days in the feed.
+    columns:
+      - name: ref_click_id
+        description: Partner click identifier
+      - name: partner_code
+        description: Partner slug (e.g. zanybyte_podcast)
+      - name: attribution_window_days
+        description: Lookback window used for this click
+      - name: signup_id
+        description: Attributed signup when matched

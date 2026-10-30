@@ -1,0 +1,2 @@
+# Weekly Zanybyte referral report — Mondays 06:30 (placeholder paths)
+30 6 * * 1 /usr/bin/python3 /PATH/TO/six-eyes-template/reports/acme_referral_partner/build_report.py --output-dir /PATH/TO/six-eyes-template/outputs/reports >> /PATH/TO/six-eyes-template/outputs/reports/referral-weekly.log 2>&1

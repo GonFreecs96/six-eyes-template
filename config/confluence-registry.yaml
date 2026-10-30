@@ -1,0 +1,21 @@
+# Acme Stream Co. — placeholder Confluence registry (titles only)
+cloud_id: "00000000-0000-0000-0000-000000000001"
+
+space:
+  key: ACME
+  name: "Acme Analytics"
+
+pages:
+  six-eyes-home:
+    title: "Six Eyes — Acme"
+    url: "https://example.atlassian.net/wiki/spaces/ACME/pages/1000/Six+Eyes"
+
+  priority-dashboard:
+    title: "Six Eyes — Priority Dashboard"
+    parent: six-eyes-home
+    url: "https://example.atlassian.net/wiki/spaces/ACME/pages/1001/Priority+Dashboard"
+
+  weekly-log:
+    title: "Six Eyes — Weekly Log"
+    parent: six-eyes-home
+    url: "https://example.atlassian.net/wiki/spaces/ACME/pages/1002/Weekly+Log"

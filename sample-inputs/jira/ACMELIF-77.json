@@ -1,0 +1,21 @@
+{
+  "key": "ACMELIF-77",
+  "project": "ACMELIF",
+  "summary": "Backfill churn_reason_code for feed v3",
+  "status": "In Progress",
+  "assignee": "Jordan Blake <jordan.blake@example.com>",
+  "labels": [
+    "lifecycle",
+    "feed"
+  ],
+  "created": "2026-09-26T09:00:00Z",
+  "updated": "2026-10-16T08:00:00Z",
+  "description": "NULL reasons after 2026-09-25 cutover.",
+  "comments": [
+    {
+      "author": "Sam Ortiz",
+      "created": "2026-10-14T10:00:00Z",
+      "body": "Staging backfill at 40%."
+    }
+  ]
+}

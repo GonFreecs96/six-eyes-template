@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "six-eyes-explorer",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8743", "--directory", "docs"],
+      "port": 8743
+    },
+    {
+      "name": "backlog-board",
+      "runtimeExecutable": ".venv/bin/python3",
+      "runtimeArgs": ["webapp/backlog_board/app.py"],
+      "port": 5151
+    }
+  ]
+}

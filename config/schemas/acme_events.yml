@@ -1,0 +1,33 @@
+version: 2
+models:
+  - name: acme_events
+    description: Product analytics event stream.
+    meta:
+      entity: event
+      grain: One row per event_id
+      keys:
+        primary: event_id
+      business_rules:
+        - id: trial_started_double_fire
+          source: config/context/entity-rules.yaml#trial_started_double_fire
+          applies_to_columns: [event_name, event_id, event_ts, user_id]
+          summary: trial_started may duplicate within 60s; dedupe before counting trials.
+        - id: funnel_step_rename_cutover
+          source: config/context/entity-rules.yaml#funnel_step_rename_cutover
+          applies_to_columns: [event_name, properties]
+          summary: Legacy funnel step names before 2026-09-01 need mapping.
+        - id: renewal_reminder_not_instrumented
+          source: config/context/entity-rules.yaml#renewal_reminder_not_instrumented
+          applies_to_columns: [event_name]
+          summary: renewal_reminder_sent is not present in warehouse yet.
+    columns:
+      - name: event_id
+        description: Unique event id
+      - name: user_id
+        description: Account id when known
+      - name: event_name
+        description: Canonical event name
+      - name: event_ts
+        description: Event timestamp UTC
+      - name: properties
+        description: JSON payload including step_name for funnel events

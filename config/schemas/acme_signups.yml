@@ -1,0 +1,29 @@
+version: 2
+models:
+  - name: acme_signups
+    description: Signup attempts and account creation for Acme Stream Co.
+    meta:
+      entity: signup
+      grain: One row per signup_id
+      keys:
+        primary: signup_id
+      business_rules:
+        - id: signup_user_id_anchor
+          source: config/context/entity-rules.yaml#signup_user_id_anchor
+          applies_to_columns: [user_id, anonymous_id]
+          summary: Join downstream tables on user_id after account creation; anonymous_id is pre-account only.
+        - id: signup_plan_vs_subscription_plan
+          source: config/context/entity-rules.yaml#signup_plan_vs_subscription_plan
+          applies_to_columns: [plan_tier, user_id]
+          summary: plan_tier on signup is intent; paid tier is on subscriptions after pay flow completes.
+    columns:
+      - name: signup_id
+        description: Surrogate key for the signup row
+      - name: user_id
+        description: Acme account id; NULL until signup completes
+      - name: anonymous_id
+        description: Pre-account browser identifier
+      - name: plan_tier
+        description: Requested plan at signup
+      - name: created_at
+        description: Signup timestamp UTC

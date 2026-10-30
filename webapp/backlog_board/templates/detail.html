@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="detail-header">
+    <div class="header-meta">
+        <h1><strong>{{ item.id }}</strong> — {{ item.title }}</h1>
+        <div class="header-tags">
+            <span class="tag module-tag">{{ module_label }}</span>
+            {% for cross_mod in cross_modules %}
+            <span class="tag cross-module-tag">+ {{ module_options.get(cross_mod, cross_mod) }}</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="header-info">
+        <div class="info-row">
+            <span class="info-label">Status:</span>
+            <span class="info-value">{{ status_label(item.status, item.escalation_level) }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Priority:</span>
+            <span class="info-value">
+                <span class="priority-dot">{{ priority_dot(item.priority_score) }}</span>
+                {{ item.priority_score }}
+            </span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Stale:</span>
+            <span class="info-value">{{ item.stale_weeks }} weeks</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Mentions:</span>
+            <span class="info-value">{{ item.mention_count }} / {{ item.progress_count }} progressed</span>
+        </div>
+        {% set st = agent_step(item) %}
+        <div class="info-row">
+            <span class="info-label">Agent:</span>
+            <span class="info-value">{{ st.badge }} {{ st.label }}</span>
+        </div>
+        {% if st.step %}
+        <div class="info-row">
+            <span class="info-label">Next step:</span>
+            <span class="info-value">{{ st.step }}</span>
+        </div>
+        {% endif %}
+        {% if st.check %}
+        <div class="info-row">
+            <span class="info-label">Checkpoint:</span>
+            <span class="info-value">{{ st.check }}</span>
+        </div>
+        {% endif %}
+        <div class="info-row">
+            <span class="info-label">Step as of:</span>
+            <span class="info-value">{{ st.as_of or 'never assessed' }}</span>
+        </div>
+        {% if item.blocked_reason and item.blocked_reason != 'null' %}
+        <div class="info-row blocked-reason">
+            <span class="info-label">Blocked:</span>
+            <span class="info-value">{{ item.blocked_reason }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="detail-nav">
+    <a href="/" class="btn-secondary">← Back to Table</a>
+    <a href="/kanban" class="btn-secondary">← Back to Kanban</a>
+</div>
+
+<div class="item-body">
+    {% if markdown_found %}
+        {{ rendered_html | safe }}
+    {% else %}
+        <p class="no-markdown">(Source markdown file not found — showing DB row only.)</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{
+  "key": "ACMEBIL-55",
+  "project": "ACMEBIL",
+  "summary": "Fix invoice header totals on mid-cycle upgrade",
+  "status": "Done",
+  "assignee": "Priya Nair <priya.nair@example.com>",
+  "labels": [
+    "billing"
+  ],
+  "created": "2026-09-05T09:00:00Z",
+  "updated": "2026-10-08T12:00:00Z",
+  "description": "Header totals correct; line-item proration follow-up in ACMEBIL-58.",
+  "comments": []
+}

@@ -1,0 +1,32 @@
+# Slim promotion ledger example — governed knowledge pipeline
+- id: E1
+  title: Pay-flow step rename v3.4
+  source: "https://example.atlassian.net/wiki/spaces/ACME/pages/2001/Pay-flow+v3.4"
+  releasing_team: Pay-flow eng
+  route: checkout
+  exposure_date: "2026-09-01"
+  hypothesis:
+    text: Funnel drop between plan_select and payment steps shifts after step merge.
+    metric: pay_flow_step_conversion
+    direction: either
+    status: pre_registered
+  read:
+    due_date: "2026-10-15"
+    verdict: insufficient_evidence
+    decision: stored
+
+- id: E2
+  title: Churn feed v3
+  source: "https://example.atlassian.net/browse/ACMELIF-77"
+  releasing_team: Lifecycle data
+  route: lifecycle
+  exposure_date: "2026-09-25"
+  hypothesis:
+    text: churn_reason_code NULL rate spikes until backfill completes.
+    metric: churn_reason_coverage
+    direction: down
+    status: pre_registered
+  read:
+    due_date: "2026-10-20"
+    verdict: not_measurable
+    decision: stored

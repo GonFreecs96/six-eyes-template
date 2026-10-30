@@ -1,0 +1,15 @@
+{
+  "key": "ACMEPLT-90",
+  "project": "ACMEPLT",
+  "summary": "Document partner_referrals.attribution_window_days",
+  "status": "Done",
+  "assignee": "Sam Ortiz <sam.ortiz@example.com>",
+  "labels": [
+    "platform",
+    "docs"
+  ],
+  "created": "2026-09-15T09:00:00Z",
+  "updated": "2026-10-10T15:00:00Z",
+  "description": "Column semantics for mixed 7/14 day partner contracts.",
+  "comments": []
+}

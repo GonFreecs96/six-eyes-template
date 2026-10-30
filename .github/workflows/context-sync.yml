@@ -1,0 +1,35 @@
+name: context-sync
+
+# Drift enforcement for bq-knowledge → config/context → schema meta lock.
+
+on:
+  push:
+    paths:
+      - "data/bq-knowledge.md"
+      - "config/context/**"
+      - "config/schemas/**"
+      - "scripts/export_context.py"
+      - "scripts/check_schema_meta.py"
+      - "scripts/check_context_sync.sh"
+      - ".github/workflows/context-sync.yml"
+  pull_request:
+    paths:
+      - "data/bq-knowledge.md"
+      - "config/context/**"
+      - "config/schemas/**"
+      - "scripts/export_context.py"
+      - "scripts/check_schema_meta.py"
+      - "scripts/check_context_sync.sh"
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "pyyaml>=6.0"
+      - name: check context layer is in sync
+        run: bash scripts/check_context_sync.sh
